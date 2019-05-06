@@ -1,0 +1,33 @@
+<?php
+	$_helper    = $this->helper('Magento\Catalog\Helper\Output');
+	$_category = $block->getCurrentCategory();
+	$_imgHtml   = '';
+	if ($_imgUrl = $block->getImageUrl()) {
+		$_imgHtml = '<div class="' . $block->getCssClass() . '"><img height="200" width="300" src="' . $_imgUrl . '" alt="' . $block->escapeHtml($_category->getName()) . '" title="' . $block->escapeHtml($_category->getName()) . '"/></div>';
+		$_imgHtml = $_helper->categoryAttribute($_category, $_imgHtml, 'image');
+		echo $_imgHtml;
+	}
+?>
+<?php 
+	$parent_category = $_category->getParentCategory()->getName();
+if($parent_category != 'Default Category') : ?>
+
+<div class="parent-category-title">
+	<p><?php echo $parent_category; ?></p>
+</div>
+
+<div class="listing_nav_page_counter">
+	<?php
+		$objectManager =  \Magento\Framework\App\ObjectManager::getInstance();	
+		$categoryRepository = $objectManager->get('\Magento\Catalog\Model\CategoryRepository');
+		$categoryFactory = $objectManager->get('\Magento\Catalog\Model\CategoryFactory');
+		$categoryId = $_category->getId(); // YOUR CATEGORY ID
+		$category = $categoryFactory->create()->load($categoryId);
+		
+		$categoryProducts = $category->getProductCollection()
+		->addAttributeToSelect('*');	
+		$CategoryProductCount=count($categoryProducts);							 
+		echo '('.$CategoryProductCount.'&nbsp;'.__('products found').')';
+	?>
+</div>
+<?php endif; ?>
